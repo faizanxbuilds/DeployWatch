@@ -394,6 +394,21 @@ code {
   .api-desc { display: none; }
 }
 
+/* ---------- Live demo additions ---------- */
+.live-pill.waking { color: var(--amber); border-color: rgba(245, 158, 11, 0.35); }
+.live-pill.waking .dot { background: var(--amber); animation: pulse 1s infinite; }
+.ci-line { margin-top: 10px; font-size: 0.9rem; color: var(--muted); }
+.ci-line a { color: inherit; text-decoration: none; border-bottom: 1px dotted var(--faint); }
+.ci-line a:hover { color: var(--text); }
+.ci-success { color: var(--accent); font-weight: 700; }
+.ci-failure { color: #f87171; font-weight: 700; }
+button.api-row { width: 100%; text-align: left; font: inherit; background: var(--card);
+  border: 1px solid var(--card-border); border-radius: var(--radius); cursor: pointer; }
+.api-response { margin: 10px 2px 0; padding: 14px 16px; background: #0b1220;
+  border: 1px solid var(--card-border); border-radius: 10px; font-family: var(--mono);
+  font-size: 0.8rem; line-height: 1.55; color: #a7f3d0; white-space: pre-wrap;
+  word-break: break-word; max-height: 320px; overflow: auto; }
+
 </style>
 </head>
 <body>
@@ -443,16 +458,16 @@ code {
         <div class="card stat">
           <p class="stat-label">Service status</p>
           <p class="stat-value status-ok"><span class="dot sm"></span><span id="stat-status">Running</span></p>
-          <p class="stat-sub">/health reporting healthy</p>
+          <p class="stat-sub" id="stat-status-sub">/health reporting healthy</p>
         </div>
         <div class="card stat">
           <p class="stat-label">Version</p>
-          <p class="stat-value mono">v4.0.0</p>
+          <p class="stat-value mono" id="stat-version">v4.0.0</p>
           <p class="stat-sub">Deployed via ArgoCD sync</p>
         </div>
         <div class="card stat">
           <p class="stat-label">Uptime</p>
-          <p class="stat-value mono" id="stat-uptime" data-uptime="3723">—</p>
+          <p class="stat-value mono" id="stat-uptime" data-uptime="0">—</p>
           <p class="stat-sub">Since last pod start</p>
         </div>
         <div class="card stat">
@@ -468,6 +483,7 @@ code {
       <div class="section-head">
         <h2>The pipeline</h2>
         <p>Six stages, zero touch. From <code>git push</code> to a monitored production rollout.</p>
+        <p class="ci-line" id="ci-line" hidden></p>
       </div>
       <div class="pipeline">
         <div class="stage card">
@@ -528,11 +544,11 @@ code {
         <p>Machine-readable endpoints for probes, dashboards and integrations.</p>
       </div>
       <div class="api-list">
-        <a class="card api-row" href="#"><span class="method get">GET</span><code>/</code><span class="api-desc">This dashboard</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="#"><span class="method get">GET</span><code>/health</code><span class="api-desc">Liveness / readiness probe</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="#"><span class="method get">GET</span><code>/info</code><span class="api-desc">App metadata, version &amp; uptime</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="#"><span class="method get">GET</span><code>/api/status</code><span class="api-desc">Lightweight status payload</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="#"><span class="method get">GET</span><code>/metrics</code><span class="api-desc">Prometheus metrics</span><span class="api-arrow">&rarr;</span></a>
+        <a class="card api-row" id="api-row-root" href="/"><span class="method get">GET</span><code>/</code><span class="api-desc">This dashboard</span><span class="api-arrow">&rarr;</span></a>
+        <div class="api-try"><button type="button" class="card api-row" data-endpoint="/health" aria-expanded="false"><span class="method get">GET</span><code>/health</code><span class="api-desc">Liveness / readiness probe</span><span class="api-arrow">&rarr;</span></button><pre class="api-response" hidden></pre></div>
+        <div class="api-try"><button type="button" class="card api-row" data-endpoint="/info" aria-expanded="false"><span class="method get">GET</span><code>/info</code><span class="api-desc">App metadata, version &amp; uptime</span><span class="api-arrow">&rarr;</span></button><pre class="api-response" hidden></pre></div>
+        <div class="api-try"><button type="button" class="card api-row" data-endpoint="/api/status" aria-expanded="false"><span class="method get">GET</span><code>/api/status</code><span class="api-desc">Lightweight status payload</span><span class="api-arrow">&rarr;</span></button><pre class="api-response" hidden></pre></div>
+        <div class="api-try"><button type="button" class="card api-row" data-endpoint="/metrics" aria-expanded="false"><span class="method get">GET</span><code>/metrics</code><span class="api-desc">Prometheus metrics</span><span class="api-arrow">&rarr;</span></button><pre class="api-response" hidden></pre></div>
       </div>
     </section>
 
@@ -557,19 +573,45 @@ code {
 
   <footer class="footer">
     <div class="container footer-inner">
-      <p>DeployWatch v4.0.0 &middot; built by <a href="https://github.com/Faizan00parvez" target="_blank" rel="noopener">Faizan Parvez</a></p>
+      <p><span id="footer-app">DeployWatch v4.0.0</span> &middot; built by <a href="https://github.com/Faizan00parvez" target="_blank" rel="noopener">Faizan Parvez</a></p>
       <p class="footer-sub">Zero-touch deployments. Full observability.</p>
     </div>
   </footer>
 
   <script>
+/* DeployWatch — live dashboard.
+ *
+ * Two live data sources, both public, no keys needed:
+ *   1. DEMO_BASE — the deployed demo (Render). /api/status gives the real
+ *      version + uptime; the API rows below become clickable "try it"
+ *      buttons that query the real endpoints.
+ *   2. GitHub API — the real repo. Shows the last CI run (conclusion, commit,
+ *      age) next to the pipeline section. Cached 15 min in localStorage.
+ *
+ * If the demo is unreachable (free tier sleeps when idle), the pill shows
+ * "Demo asleep" and retries — the page never breaks, repo data stays live.
+ */
 (function () {
   "use strict";
+
+  var DEMO_BASE = "https://deploywatch-demo.onrender.com";
+  var REPO = "faizanxbuilds/DeployWatch";
+  var GH_API = "https://api.github.com/repos/" + REPO;
+  var CI_CACHE_KEY = "dw-ci-run";
+  var CI_CACHE_TTL = 15 * 60 * 1000;
+
   var pill = document.getElementById("live-pill");
   var liveText = document.getElementById("live-text");
   var statStatus = document.getElementById("stat-status");
+  var statSub = document.getElementById("stat-status-sub");
   var uptimeEl = document.getElementById("stat-uptime");
-  var uptimeSeconds = 3723;
+
+  var uptimeSeconds = parseInt(uptimeEl ? uptimeEl.getAttribute("data-uptime") : "0", 10) || 0;
+  var demoFailures = 0;
+  var demoLive = false;
+
+  /* ---------- helpers ---------- */
+
   function formatUptime(totalSeconds) {
     var d = Math.floor(totalSeconds / 86400);
     var h = Math.floor((totalSeconds % 86400) / 3600);
@@ -582,13 +624,243 @@ code {
     parts.push(s + "s");
     return parts.join(" ");
   }
-  function renderUptime() { uptimeEl.textContent = formatUptime(uptimeSeconds); }
-  pill.classList.add("ok");
-  liveText.textContent = "Live";
-  statStatus.textContent = "Running";
-  renderUptime();
-  setInterval(function () { uptimeSeconds += 1; renderUptime(); }, 1000);
+
+  function renderUptime() {
+    if (uptimeEl) uptimeEl.textContent = formatUptime(uptimeSeconds);
+  }
+
+  function fetchJson(url, timeoutMs) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () { reject(new Error("timeout")); }, timeoutMs || 12000);
+      fetch(url, { cache: "no-store" }).then(
+        function (res) {
+          clearTimeout(timer);
+          if (!res.ok) { reject(new Error("http " + res.status)); return; }
+          resolve(res.json());
+        },
+        function (err) { clearTimeout(timer); reject(err); }
+      );
+    });
+  }
+
+  function getText(url, timeoutMs) {
+    return new Promise(function (resolve, reject) {
+      var timer = setTimeout(function () { reject(new Error("timeout")); }, timeoutMs || 12000);
+      fetch(url, { cache: "no-store" }).then(
+        function (res) {
+          clearTimeout(timer);
+          if (!res.ok) { reject(new Error("http " + res.status)); return; }
+          resolve(res.text());
+        },
+        function (err) { clearTimeout(timer); reject(err); }
+      );
+    });
+  }
+
+  function timeAgo(date) {
+    var s = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (s < 60) return "just now";
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + "m ago";
+    var h = Math.floor(m / 60);
+    if (h < 24) return h + "h ago";
+    var d = Math.floor(h / 24);
+    if (d < 30) return d + "d ago";
+    return date.toISOString().slice(0, 10);
+  }
+
+  function readCache(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return null;
+      var item = JSON.parse(raw);
+      if (Date.now() - item.t > CI_CACHE_TTL) return null;
+      return item.v;
+    } catch (e) { return null; }
+  }
+
+  function writeCache(key, value) {
+    try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), v: value })); }
+    catch (e) { /* storage unavailable — fine, just fetch fresh */ }
+  }
+
+  /* ---------- demo status ---------- */
+
+  function setVersion(v) {
+    var tag = document.querySelector(".version-tag");
+    var statV = document.getElementById("stat-version");
+    var foot = document.getElementById("footer-app");
+    if (tag) tag.textContent = "v" + v;
+    if (statV) statV.textContent = "v" + v;
+    if (foot) foot.textContent = "DeployWatch v" + v;
+    document.title = "DeployWatch v" + v + " — Deployment Pipeline Dashboard";
+  }
+
+  function setPill(state) {
+    // "checking" | "live" | "waking" | "standby"
+    pill.classList.remove("ok", "down", "waking");
+    if (state === "live") {
+      pill.classList.add("ok");
+      liveText.textContent = "Live";
+      statStatus.textContent = "Running";
+      statSub.textContent = "/health reporting healthy";
+    } else if (state === "waking") {
+      pill.classList.add("waking");
+      liveText.textContent = "Waking demo…";
+      statStatus.textContent = "Starting";
+      statSub.textContent = "free-tier demo sleeps when idle — waking takes ~1 min";
+    } else if (state === "standby") {
+      pill.classList.add("down");
+      liveText.textContent = "Demo asleep";
+      statStatus.textContent = "Standby";
+      statSub.textContent = "demo offline — CI + repo data below are still live";
+    } else {
+      liveText.textContent = "Checking…";
+    }
+  }
+
+  function pollDemo() {
+    if (!DEMO_BASE) { setPill("standby"); scheduleDemoPoll(60000); return; }
+    fetchJson(DEMO_BASE + "/api/status").then(
+      function (data) {
+        if (data && data.status === "running") {
+          demoFailures = 0;
+          demoLive = true;
+          setPill("live");
+          if (typeof data.uptime_seconds === "number") {
+            uptimeSeconds = data.uptime_seconds;
+            renderUptime();
+          }
+          if (data.version) setVersion(data.version);
+          scheduleDemoPoll(30000);
+        } else {
+          demoDown();
+        }
+      },
+      function () { demoDown(); }
+    );
+  }
+
+  function demoDown() {
+    demoLive = false;
+    demoFailures++;
+    if (demoFailures === 1) {
+      // First failure is usually the free tier asleep — say so, retry soon.
+      setPill("waking");
+      scheduleDemoPoll(20000);
+    } else {
+      setPill("standby");
+      scheduleDemoPoll(60000);
+    }
+  }
+
+  function scheduleDemoPoll(ms) {
+    setTimeout(pollDemo, ms);
+  }
+
+  /* ---------- "try it" API rows ---------- */
+
+  function prettyBody(endpoint, text) {
+    var trimmed = text.trim();
+    if (endpoint === "/metrics") {
+      var lines = trimmed.split("\n");
+      var head = lines.slice(0, 25).join("\n");
+      return lines.length > 25 ? head + "\n… (" + lines.length + " lines total)" : head;
+    }
+    try {
+      return JSON.stringify(JSON.parse(trimmed), null, 2);
+    } catch (e) {
+      return trimmed.slice(0, 2000);
+    }
+  }
+
+  function wireApiRows() {
+    var list = document.querySelector(".api-list");
+    if (!list) return;
+    var rootRow = document.getElementById("api-row-root");
+    if (rootRow && DEMO_BASE) {
+      rootRow.setAttribute("href", DEMO_BASE);
+      rootRow.setAttribute("target", "_blank");
+      rootRow.setAttribute("rel", "noopener");
+    }
+    list.addEventListener("click", function (e) {
+      var btn = e.target.closest ? e.target.closest("button.api-row") : null;
+      if (!btn) return;
+      var wrap = btn.parentNode;
+      var pre = wrap.querySelector(".api-response");
+      if (!pre) return;
+      var willOpen = pre.hidden;
+      // close any other open response
+      var others = list.querySelectorAll(".api-response");
+      for (var i = 0; i < others.length; i++) {
+        others[i].hidden = true;
+        var b = others[i].parentNode.querySelector("button.api-row");
+        if (b) b.setAttribute("aria-expanded", "false");
+      }
+      if (!willOpen) return;
+      pre.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      var endpoint = btn.getAttribute("data-endpoint");
+      if (!demoLive) {
+        pre.textContent = "demo is asleep — it wakes on the first visit (about a minute), then try again.";
+        return;
+      }
+      pre.textContent = "GET " + DEMO_BASE + endpoint + " …";
+      getText(DEMO_BASE + endpoint).then(
+        function (text) { pre.textContent = prettyBody(endpoint, text); },
+        function () { pre.textContent = "request failed — the demo may have gone back to sleep; retry in a minute."; }
+      );
+    });
+  }
+
+  /* ---------- live CI badge (real repo data) ---------- */
+
+  function renderCI(info) {
+    var el = document.getElementById("ci-line");
+    if (!el) return;
+    el.hidden = false;
+    var cls = info.conclusion === "success" ? "ci-success" : "ci-failure";
+    var label = info.conclusion === "success" ? "passing" : info.conclusion;
+    el.innerHTML = "Live from the repo — last pipeline run: " +
+      '<a href="' + info.url + '" target="_blank" rel="noopener">' +
+      '<span class="' + cls + '">' + label + "</span> · " +
+      info.sha + " · " + timeAgo(new Date(info.when)) + " →</a>";
+  }
+
+  function loadCI() {
+    var cached = readCache(CI_CACHE_KEY);
+    if (cached) { renderCI(cached); return; }
+    fetchJson(GH_API + "/actions/workflows/ci.yml/runs?per_page=1&branch=main").then(
+      function (d) {
+        var r = d && d.workflow_runs && d.workflow_runs[0];
+        if (!r) return;
+        var info = {
+          conclusion: r.conclusion || r.status,
+          sha: (r.head_sha || "").slice(0, 7),
+          when: r.created_at,
+          url: r.html_url
+        };
+        writeCache(CI_CACHE_KEY, info);
+        renderCI(info);
+      },
+      function () { /* GitHub API unreachable — line stays hidden */ }
+    );
+  }
+
+  /* ---------- boot ---------- */
+
+  if (uptimeSeconds > 0) renderUptime();
+  setPill("checking");
+  wireApiRows();
+  loadCI();
+  pollDemo();
+  setInterval(function () {
+    if (!demoLive) return; // don't fake-tick while the demo is unreachable
+    uptimeSeconds += 1;
+    renderUptime();
+  }, 1000);
 })();
+
 </script>
 </body>
 </html>
