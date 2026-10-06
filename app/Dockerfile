@@ -24,4 +24,6 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
 # Serve with gunicorn (production WSGI server) instead of Flask's dev server
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "60", "app:app"]
+# ${PORT:-5000} honors the $PORT convention on PaaS hosts (Render) while
+# keeping port 5000 for local Docker / Minikube runs.
+CMD ["sh", "-c", "gunicorn --bind 0.0.0.0:${PORT:-5000} --workers 2 --timeout 60 app:app"]

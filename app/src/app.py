@@ -8,6 +8,7 @@ integrations (`/info`, `/metrics` via prometheus_flask_exporter).
 import time
 
 from flask import Flask, jsonify, render_template
+from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
 APP_NAME = "DeployWatch"
@@ -18,6 +19,10 @@ TECH_STACK = ["Flask", "Kubernetes", "ArgoCD", "Prometheus", "Grafana"]
 START_TIME = time.monotonic()
 
 app = Flask(__name__)
+# Let the public project page (faizanxbuilds.github.io, a different origin)
+# query the JSON API directly from visitors' browsers. Tight origin list,
+# not a wildcard — the API stays closed to everyone else.
+CORS(app, origins=["https://faizanxbuilds.github.io"])
 metrics = PrometheusMetrics(app)
 
 

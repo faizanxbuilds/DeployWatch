@@ -8,4 +8,5 @@ Jinja2==3.1.6
 MarkupSafe==3.0.3
 prometheus_client==0.25.0
 prometheus_flask_exporter==0.23.2
+flask-cors==6.0.5
 Werkzeug==3.1.8

@@ -1,0 +1,27 @@
+# Render Blueprint — public DeployWatch demo.
+#
+# Deploys the already-public Docker Hub image (CI pushes :latest on every
+# push to main), so there is no build step and no repo build config needed.
+#
+# How to use (in Faizan's Render account):
+#   1. Merge the CORS/PORT patch first, so CI rebuilds and pushes a fresh
+#      :latest image (the old image binds only port 5000 and has no CORS).
+#   2. Render dashboard → New → Blueprint → connect faizanxbuilds/DeployWatch.
+#   3. Keep the service name `deploywatch-demo` — the project page expects
+#      https://deploywatch-demo.onrender.com (DEMO_BASE in live-dashboard.js).
+#   4. Apply. First deploy takes ~2-3 min (image pull + cold start).
+# Notes:
+#   - Free tier sleeps after 15 min idle; the project page handles that
+#     honestly ("Demo asleep", auto-retry) instead of looking broken.
+#   - healthCheckPath hits the app's real /health probe endpoint.
+#   - autoDeploy pulls the new image whenever CI pushes :latest.
+
+services:
+  - type: web
+    name: deploywatch-demo
+    runtime: image
+    image:
+      url: docker.io/faizan00parvez/deploywatch:latest
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
