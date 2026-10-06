@@ -141,10 +141,22 @@
       </div>
       <div class="api-list">
         <a class="card api-row" href="/"><span class="method get">GET</span><code>/</code><span class="api-desc">This dashboard</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="/health"><span class="method get">GET</span><code>/health</code><span class="api-desc">Liveness / readiness probe</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="/info"><span class="method get">GET</span><code>/info</code><span class="api-desc">App metadata, version &amp; uptime</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="/api/status"><span class="method get">GET</span><code>/api/status</code><span class="api-desc">Lightweight status payload</span><span class="api-arrow">&rarr;</span></a>
-        <a class="card api-row" href="/metrics"><span class="method get">GET</span><code>/metrics</code><span class="api-desc">Prometheus metrics</span><span class="api-arrow">&rarr;</span></a>
+        <div class="api-try">
+          <button type="button" class="card api-row" data-endpoint="/health" aria-expanded="false"><span class="method get">GET</span><code>/health</code><span class="api-desc">Liveness / readiness probe</span><span class="api-arrow">&rarr;</span></button>
+          <pre class="api-response" hidden></pre>
+        </div>
+        <div class="api-try">
+          <button type="button" class="card api-row" data-endpoint="/info" aria-expanded="false"><span class="method get">GET</span><code>/info</code><span class="api-desc">App metadata, version &amp; uptime</span><span class="api-arrow">&rarr;</span></button>
+          <pre class="api-response" hidden></pre>
+        </div>
+        <div class="api-try">
+          <button type="button" class="card api-row" data-endpoint="/api/status" aria-expanded="false"><span class="method get">GET</span><code>/api/status</code><span class="api-desc">Lightweight status payload</span><span class="api-arrow">&rarr;</span></button>
+          <pre class="api-response" hidden></pre>
+        </div>
+        <div class="api-try">
+          <button type="button" class="card api-row" data-endpoint="/metrics" aria-expanded="false"><span class="method get">GET</span><code>/metrics</code><span class="api-desc">Prometheus metrics</span><span class="api-arrow">&rarr;</span></button>
+          <pre class="api-response" hidden></pre>
+        </div>
       </div>
     </section>
 

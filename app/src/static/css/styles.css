@@ -384,3 +384,29 @@ code {
   .hero { padding: 64px 24px 44px; }
   .api-desc { display: none; }
 }
+
+/* ---------- Try-it API rows ---------- */
+button.api-row {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.api-response {
+  margin: 10px 2px 0;
+  padding: 14px 16px;
+  background: #0b1220;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: #a7f3d0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow: auto;
+}

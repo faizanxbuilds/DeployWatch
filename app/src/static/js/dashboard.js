@@ -1,4 +1,6 @@
-/* DeployWatch dashboard — live status polling + uptime ticker */
+/* DeployWatch dashboard — live status polling, uptime ticker, try-it API rows.
+ * Same-origin fetches: this script runs on the app itself, so the endpoints
+ * are relative (no CORS involved). */
 (function () {
   "use strict";
 
@@ -65,8 +67,58 @@
       });
   }
 
+  function prettyBody(endpoint, text) {
+    var trimmed = text.trim();
+    if (endpoint === "/metrics") {
+      var lines = trimmed.split("\n");
+      var head = lines.slice(0, 25).join("\n");
+      return lines.length > 25 ? head + "\n… (" + lines.length + " lines total)" : head;
+    }
+    try {
+      return JSON.stringify(JSON.parse(trimmed), null, 2);
+    } catch (e) {
+      return trimmed.slice(0, 2000);
+    }
+  }
+
+  function wireTryIt() {
+    var list = document.querySelector(".api-list");
+    if (!list) return;
+    list.addEventListener("click", function (e) {
+      var btn = e.target.closest ? e.target.closest("button.api-row") : null;
+      if (!btn) return;
+      var pre = btn.parentNode.querySelector(".api-response");
+      if (!pre) return;
+      var willOpen = pre.hidden;
+      // Close any other open response first.
+      var others = list.querySelectorAll(".api-response");
+      for (var i = 0; i < others.length; i++) {
+        others[i].hidden = true;
+        var b = others[i].parentNode.querySelector("button.api-row");
+        if (b) b.setAttribute("aria-expanded", "false");
+      }
+      if (!willOpen) return;
+      pre.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      var endpoint = btn.getAttribute("data-endpoint");
+      pre.textContent = "GET " + endpoint + " …";
+      fetch(endpoint, { cache: "no-store" })
+        .then(function (res) {
+          if (!res.ok) throw new Error("http " + res.status);
+          return res.text();
+        })
+        .then(function (text) {
+          pre.textContent = prettyBody(endpoint, text);
+        })
+        .catch(function () {
+          pre.textContent = "request failed — try again.";
+        });
+    });
+  }
+
   renderUptime();
   setState("checking");
+  wireTryIt();
   poll();
   setInterval(poll, 5000);          // refresh health every 5s
   setInterval(function () {         // tick the uptime display every 1s
