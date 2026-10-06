@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: faizan00parvez/deploywatch
-  tag: e2b2c2c618bd224837877c591785ad0062a6b1ce
+  tag: 918312d3750081ae671019ee232fb12d2a5f5aac
   pullPolicy: Always
 
 service:
