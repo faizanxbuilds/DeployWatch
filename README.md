@@ -24,6 +24,13 @@ DeployWatch is a complete GitOps deployment pipeline I built to answer one quest
 
 Every push to `main` triggers automated tests, a versioned container build, and a GitOps sync that lands the new image on Kubernetes — with automatic rollback on failure and live CPU/memory observability throughout.
 
+## 🔴 Live demo
+
+- **Demo dashboard:** https://faizanxbuilds.github.io/DeployWatch/ — the real project UI, with try-it API rows that call the live backend
+- **Live API:** https://deploywatch-demo.onrender.com — Flask + Gunicorn on Render, running the public image `faizan00parvez/deploywatch:latest`
+
+Note: Render's free tier does not auto-deploy when CI pushes a new image — after each push, go to the Render dashboard and hit **Manual Deploy > Deploy latest image**.
+
 ## ✨ Features
 
 - **Fully automated CI/CD** — tests → Docker build → registry push → Helm chart update, on every push
