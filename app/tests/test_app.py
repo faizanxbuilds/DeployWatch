@@ -54,3 +54,9 @@ def test_not_found_page(client):
     response = client.get('/this-route-does-not-exist')
     assert response.status_code == 404
     assert b'DeployWatch' in response.data
+
+def test_live_release_identity(client):
+    info = client.get('/info').get_json()
+    status = client.get('/api/status').get_json()
+    assert info['release_note'] and status['release_note'] == info['release_note']
+    assert status['revision'] == info['revision']

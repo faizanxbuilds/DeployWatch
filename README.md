@@ -29,7 +29,7 @@ Every push to `main` triggers automated tests, a versioned container build, and 
 - **Demo dashboard:** https://faizanxbuilds.github.io/DeployWatch/ — the real project UI, with try-it API rows that call the live backend
 - **Live API:** https://deploywatch-demo.onrender.com — Flask + Gunicorn on Render, running the public image `faizan00parvez/deploywatch:latest`
 
-Note: Render's free tier does not auto-deploy when CI pushes a new image — after each push, go to the Render dashboard and hit **Manual Deploy > Deploy latest image**.
+The release workflow triggers Render after publishing the image and verifies the running revision through /info.
 
 ## ✨ Features
 
@@ -198,3 +198,10 @@ MIT — see [LICENSE](LICENSE) for details.
 Built by [Faizan Parvez](https://github.com/Faizan00parvez) · DevOps & Cloud Engineer
 
 </div>
+## Demonstrate a live release
+
+1. Share [Release watch](https://faizanxbuilds.github.io/DeployWatch/#release) and leave it open.
+2. As a maintainer, edit [the release message](https://github.com/faizanxbuilds/DeployWatch/edit/main/app/src/release-note.txt). Commit a short, recognizable phrase to main.
+3. Follow the linked source commit, Actions run and Helm commit on Release watch. The last milestone appears when CI reads the matching image revision from Render. The running message comes independently from the public app. Repeat with a new phrase for each demo.
+
+The workflow records timestamped milestones on the public release-feed branch. The Render deploy hook is stored in the RENDER_DEPLOY_HOOK Actions secret. Kubernetes sync is managed separately by Argo CD.

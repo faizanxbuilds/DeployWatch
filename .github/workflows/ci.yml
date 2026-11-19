@@ -1,67 +1,90 @@
 name: DeployWatch CI
-
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
+
+concurrency:
+  group: deploywatch-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   test:
-    name: Run Tests
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - name: Record incoming revision
+        if: github.event_name == 'push'
+        run: python scripts/report_release.py received
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-
-      - name: Install dependencies
+      - name: Test application
+        working-directory: app
         run: |
-          cd app
-          pip install -r src/requirements.txt
-          pip install pytest
+          pip install -r src/requirements.txt pytest
+          python -m pytest tests/ -q
+      - if: success() && github.event_name == 'push'
+        run: python scripts/report_release.py tested
+      - if: failure() && github.event_name == 'push'
+        run: python scripts/report_release.py failed
 
-      - name: Run tests
-        run: |
-          cd app
-          python -m pytest tests/ -v
-
-  build:
-    name: Build Docker Image
-    runs-on: ubuntu-latest
+  publish:
+    if: github.event_name == 'push'
     needs: test
+    runs-on: ubuntu-latest
     permissions:
-        contents: write
-
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push image
-        uses: docker/build-push-action@v5
+      - uses: docker/build-push-action@v5
         with:
           context: ./app
           push: true
+          build-args: RELEASE_SHA=${{ github.sha }}
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/deploywatch:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/deploywatch:${{ github.sha }}
-
-      - name: Update Helm image tag
+      - run: python scripts/report_release.py image
+      - name: Update Helm image reference
         run: |
-          sed -i "s|tag:.*|tag: ${{ github.sha }}|g" helm/deploywatch/values.yaml
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
+          git fetch origin main
+          git checkout -B main origin/main
+          sed -i "s|^  tag:.*|  tag: ${GITHUB_SHA}|" helm/deploywatch/values.yaml
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git add helm/deploywatch/values.yaml
-          git diff --staged --quiet || git commit -m "ci: update image tag to ${{ github.sha }}"
-          git push
+          git diff --staged --quiet || git commit -m "ci: update image tag to ${GITHUB_SHA}"
+          git push origin main
+          git rev-parse HEAD > "$RUNNER_TEMP/helm-revision"
+          git checkout --detach "$GITHUB_SHA"
+          python scripts/report_release.py helm
+      - name: Deploy and verify exact revision on Render
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          curl --fail --silent --show-error --request POST "$DEPLOY_HOOK" --output /dev/null
+          for attempt in {1..60}; do
+            revision=$(curl --silent --fail --max-time 8 "https://deploywatch-demo.onrender.com/info?check=${GITHUB_RUN_ID}-$attempt" | jq -r '.revision // empty') || true
+            if [[ "$revision" == "$GITHUB_SHA" ]]; then
+              python scripts/report_release.py live
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+      - if: failure()
+        run: python scripts/report_release.py failed

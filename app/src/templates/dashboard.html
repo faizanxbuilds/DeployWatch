@@ -1,12 +1,27 @@
-﻿{% set views = [('monitor','Service monitor','M2 12h4l3-8 5 15 3-7h5'),('api','Endpoint inspector','M8 5 2 12l6 7m8-14 6 7-6 7'),('pipeline','Delivery pipeline','M4 4h6v6H4z M14 14h6v6h-6z M7 10v7h7')] %}
+{% set views = [('release','Release watch','M4 17 10 11l4 3 6-9 M15 5h5v5'),('monitor','Service monitor','M2 12h4l3-8 5 15 3-7h5'),('api','Endpoint inspector','M8 5 2 12l6 7m8-14 6 7-6 7'),('pipeline','Delivery pipeline','M4 4h6v6H4z M14 14h6v6h-6z M7 10v7h7')] %}
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ app_name }} | Service console</title><link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}"></head>
-<body><aside><a class="brand" href="#monitor"><b class="logo" aria-hidden="true">&#8767;</b>{{ app_name }}</a>
+<body data-api-base="{{ api_base|default('') }}"><aside><a class="brand" href="#release"><b class="logo" aria-hidden="true">&#8767;</b>{{ app_name }}</a>
 <p class="label nav-label">Workspace</p><nav aria-label="Workspace">
 {% for id,name,path in views %}<a href="#{{ id }}" data-view="{{ id }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{ path }}"/></svg>{{ name }}</a>{% endfor %}</nav>
 <div class="side-foot"><a href="https://github.com/faizanxbuilds/DeployWatch">GitHub repository &#8599;</a><small>Built by <a href="https://github.com/faizanxbuilds">Faizan Parvez</a></small></div></aside>
-<main><header><span>Workspace <i>/</i> <strong id="crumb">Service monitor</strong></span><code>v{{ version }}</code></header>
-<div class="workspace"><section id="monitor"><div class="heading"><div><p class="label">Observability</p><h1>Service monitor</h1></div><button id="check">&#8635; &nbsp; Run check</button></div>
+<main><header><span>Workspace <i>/</i> <strong id="crumb">Release watch</strong></span><code>v{{ version }}</code></header>
+<div class="workspace"><section id="release">
+  <p class="label">Continuous delivery</p><h1>Release watch</h1>
+  <p class="intro">Follow the latest push to <code>main</code> from its first test to the version serving visitors. This page updates automatically.</p>
+  <article class="release-banner">
+    <p class="label">Latest change</p><h2 id="release-message">Looking up the release&hellip;</h2>
+    <p id="release-note"></p><div class="evidence"><a id="source-link" hidden>Source commit</a><a id="run-link" hidden>Workflow run &#8599;</a></div>
+  </article>
+  <div class="heading sub"><h2>Release timeline</h2><span class="cadence">Updates every 5s</span></div>
+  <ol class="timeline">{% for key,title in [('received','Push received'),('tested','Tests passed'),('image','Docker image published'),('helm','Helm image tag updated'),('live','Revision verified on Render')] %}
+    <li data-event="{{ key }}"><strong>{{ title }}</strong><span>Awaiting evidence</span></li>
+  {% endfor %}</ol>
+  <a id="helm-link" hidden>Inspect the Helm commit &#8599;</a>
+  <p id="release-status" role="status"></p>
+  <div class="running"><p class="label">Currently serving visitors</p><h2 id="serving-note">Contacting the app&hellip;</h2><code id="serving-sha"></code></div>
+  <details><summary>How to demonstrate a release</summary><p>Leave this page open for your audience. With repository write access, <a href="https://github.com/faizanxbuilds/DeployWatch/edit/main/app/src/release-note.txt" target="_blank" rel="noopener">edit the release message on GitHub</a> and commit to main. Pick a phrase your audience will recognize. Watch the timeline, then look for your phrase under ?Currently serving visitors.?</p></details>
+</section><section id="monitor" hidden><div class="heading"><div><p class="label">Observability</p><h1>Service monitor</h1></div><button id="check">&#8635; &nbsp; Run check</button></div>
 <div class="signal-panel"><div><p class="label">Current service state</p><h2 id="state" role="status">Connecting</h2><p id="summary">Contacting the service&hellip;</p></div>
 <svg class="scope" viewBox="0 0 340 190" aria-hidden="true"><defs><pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".85" fill="#a68ac5"/></pattern></defs><rect width="340" height="190" fill="url(#dots)"/><g fill="none" stroke="#a58bbf" stroke-width=".8">{% for r in [26,50,74,98] %}<circle cx="170" cy="95" r="{{ r }}"/>{% endfor %}<path d="M0 95h340M170 0v190"/></g><path class="pulse" d="M30 95h91l10-11 10 22 16-50 18 80 16-54 10 13h108" fill="none" stroke-width="3"/></svg>
 </div>

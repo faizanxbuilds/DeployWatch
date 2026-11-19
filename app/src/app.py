@@ -5,7 +5,9 @@ Kubernetes probes (`/health`), the dashboard (`/api/status`) and
 integrations (`/info`, `/metrics` via prometheus_flask_exporter).
 """
 
+import os
 import time
+from pathlib import Path
 
 from flask import Flask, jsonify, render_template
 from flask_cors import CORS
@@ -15,6 +17,9 @@ APP_NAME = "DeployWatch"
 APP_VERSION = "4.0.0"
 APP_DESCRIPTION = "Zero-touch GitOps deployment pipeline with live observability"
 TECH_STACK = ["Flask", "Kubernetes", "ArgoCD", "Prometheus", "Grafana"]
+
+RELEASE_SHA = os.getenv("RELEASE_SHA") or None
+RELEASE_NOTE = Path(__file__).with_name("release-note.txt").read_text(encoding="utf8").strip()
 
 START_TIME = time.monotonic()
 
@@ -55,6 +60,8 @@ def info():
         {
             "app": APP_NAME,
             "version": APP_VERSION,
+            "revision": RELEASE_SHA,
+            "release_note": RELEASE_NOTE,
             "description": APP_DESCRIPTION,
             "uptime_seconds": _uptime_seconds(),
             "tech_stack": TECH_STACK,
@@ -69,6 +76,8 @@ def api_status():
         {
             "app": APP_NAME,
             "version": APP_VERSION,
+            "revision": RELEASE_SHA,
+            "release_note": RELEASE_NOTE,
             "status": "running",
             "uptime_seconds": _uptime_seconds(),
         }

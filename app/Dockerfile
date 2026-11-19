@@ -19,6 +19,8 @@ COPY --from=builder /root/.local /root/.local
 COPY src/ .
 
 ENV PATH=/root/.local/bin:$PATH
+ARG RELEASE_SHA
+ENV RELEASE_SHA=${RELEASE_SHA}
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 5000
