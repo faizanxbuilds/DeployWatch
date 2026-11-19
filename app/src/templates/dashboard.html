@@ -1,87 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="DeployWatch — zero-touch GitOps deployment pipeline with live observability." />
-  <title>{{ app_name }} — Deployment Pipeline Dashboard</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%2310b981' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%2310b981'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-</head>
-<body>
-  <div class="bg-glow" aria-hidden="true"></div>
-
-  <header class="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="/">
-        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.5"/>
-          <circle cx="16" cy="16" r="5" fill="currentColor"/>
-          <line x1="16" y1="16" x2="25" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
-        <span>{{ app_name }}</span>
-        <span class="version-tag">v{{ version }}</span>
-      </a>
-      <nav class="nav-links">
-        <a href="#pipeline">Pipeline</a>
-        <a href="#api">API</a>
-        <a href="https://github.com/Faizan00parvez/DeployWatch" target="_blank" rel="noopener">GitHub</a>
-      </nav>
-      <div class="live-pill" id="live-pill" role="status" aria-live="polite">
-        <span class="dot"></span><span id="live-text">Checking…</span>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <!-- Hero -->
-    <section class="hero container">
-      <p class="eyebrow">GitOps &middot; Kubernetes &middot; Observability</p>
-      <h1>Push your code.<br /><span class="gradient">DeployWatch handles the rest.</span></h1>
-      <p class="lede">
-        Every push to <code>main</code> flows through automated tests, a container build,
-        and a GitOps sync — landing on Kubernetes with zero manual steps,
-        while Prometheus and Grafana watch every metric.
-      </p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#pipeline">See how it works</a>
-        <a class="btn btn-ghost" href="https://github.com/Faizan00parvez/DeployWatch" target="_blank" rel="noopener">View on GitHub</a>
-      </div>
-    </section>
-
-    <!-- Stats -->
-    <section class="container">
-      <div class="stats-grid">
-        <div class="card stat">
-          <p class="stat-label">Service status</p>
-          <p class="stat-value status-ok"><span class="dot sm"></span><span id="stat-status">Running</span></p>
-          <p class="stat-sub">/health reporting healthy</p>
-        </div>
-        <div class="card stat">
-          <p class="stat-label">Version</p>
-          <p class="stat-value mono">v{{ version }}</p>
-          <p class="stat-sub">Deployed via ArgoCD sync</p>
-        </div>
-        <div class="card stat">
-          <p class="stat-label">Uptime</p>
-          <p class="stat-value mono" id="stat-uptime" data-uptime="{{ uptime_seconds }}">—</p>
-          <p class="stat-sub">Since last pod start</p>
-        </div>
-        <div class="card stat">
-          <p class="stat-label">API endpoints</p>
-          <p class="stat-value mono">5</p>
-          <p class="stat-sub">/health · /info · /metrics …</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pipeline -->
-    <section id="pipeline" class="container section">
-      <div class="section-head">
-        <h2>The pipeline</h2>
-        <p>Six stages, zero touch. From <code>git push</code> to a monitored production rollout.</p>
-      </div>
-      <div class="pipeline">
+﻿{% set views = [('monitor','Service monitor','M2 12h4l3-8 5 15 3-7h5'),('api','Endpoint inspector','M8 5 2 12l6 7m8-14 6 7-6 7'),('pipeline','Delivery pipeline','M4 4h6v6H4z M14 14h6v6h-6z M7 10v7h7')] %}
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ app_name }} | Service console</title><link rel="stylesheet" href="{{ url_for('static',filename='css/styles.css') }}"></head>
+<body><aside><a class="brand" href="#monitor"><b class="logo" aria-hidden="true">&#8767;</b>{{ app_name }}</a>
+<p class="label nav-label">Workspace</p><nav aria-label="Workspace">
+{% for id,name,path in views %}<a href="#{{ id }}" data-view="{{ id }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="{{ path }}"/></svg>{{ name }}</a>{% endfor %}</nav>
+<div class="side-foot"><a href="https://github.com/faizanxbuilds/DeployWatch">GitHub repository &#8599;</a><small>Built by <a href="https://github.com/faizanxbuilds">Faizan Parvez</a></small></div></aside>
+<main><header><span>Workspace <i>/</i> <strong id="crumb">Service monitor</strong></span><code>v{{ version }}</code></header>
+<div class="workspace"><section id="monitor"><div class="heading"><div><p class="label">Observability</p><h1>Service monitor</h1></div><button id="check">&#8635; &nbsp; Run check</button></div>
+<div class="signal-panel"><div><p class="label">Current service state</p><h2 id="state" role="status">Connecting</h2><p id="summary">Contacting the service&hellip;</p></div>
+<svg class="scope" viewBox="0 0 340 190" aria-hidden="true"><defs><pattern id="dots" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r=".85" fill="#a68ac5"/></pattern></defs><rect width="340" height="190" fill="url(#dots)"/><g fill="none" stroke="#a58bbf" stroke-width=".8">{% for r in [26,50,74,98] %}<circle cx="170" cy="95" r="{{ r }}"/>{% endfor %}<path d="M0 95h340M170 0v190"/></g><path class="pulse" d="M30 95h91l10-11 10 22 16-50 18 80 16-54 10 13h108" fill="none" stroke-width="3"/></svg>
+</div>
+<div class="metrics">{% for title,id,hint in [('Response time','latency','Latest successful check'),('Process uptime','uptime','Since service start'),('Successful checks','ratio','Since page load')] %}<div><p class="label">{{ title }}</p><strong id="{{ id }}">&mdash;</strong><small>{{ hint }}</small></div>{% endfor %}</div>
+<div class="heading sub"><div><h2>Probe activity</h2><p>Recent status checks from this tab.</p></div><span class="cadence">Every 5s</span></div>
+<div class="table-wrap"><table><thead><tr><th>Time</th><th>Endpoint</th><th>Result</th><th>Duration</th></tr></thead><tbody id="activity"></tbody></table></div></section>
+<section id="api" hidden><p class="label">Diagnostics</p><h1>Endpoint inspector</h1><p class="intro">Send a request to the running service and inspect the full response.</p>
+<div class="inspector"><form id="request"><label for="endpoint">Request endpoint</label><div class="request-line"><code>GET</code><select id="endpoint">{% for path in ['/health','/info','/api/status','/metrics','/'] %}<option>{{ path }}</option>{% endfor %}</select><button>Send request &rarr;</button></div></form><div class="response-head"><h2>Response</h2><output id="http"></output></div><pre id="body">Select an endpoint and send a request.</pre></div></section>
+<section id="pipeline" hidden><p class="label">Architecture</p><h1>Delivery pipeline</h1><p class="intro">Follow a change from source control to a monitored Kubernetes rollout.</p><div class="pipeline">
         <div class="stage card">
           <div class="stage-icon">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
@@ -131,41 +65,7 @@
           <p>Prometheus scrapes metrics, Grafana renders them live. Failures roll back.</p>
         </div>
       </div>
-    </section>
-
-    <!-- API -->
-    <section id="api" class="container section">
-      <div class="section-head">
-        <h2>API</h2>
-        <p>Machine-readable endpoints for probes, dashboards and integrations.</p>
-      </div>
-      <div class="api-list">
-        <a class="card api-row" href="/"><span class="method get">GET</span><code>/</code><span class="api-desc">This dashboard</span><span class="api-arrow">&rarr;</span></a>
-        <div class="api-try">
-          <button type="button" class="card api-row" data-endpoint="/health" aria-expanded="false"><span class="method get">GET</span><code>/health</code><span class="api-desc">Liveness / readiness probe</span><span class="api-arrow">&rarr;</span></button>
-          <pre class="api-response" hidden></pre>
-        </div>
-        <div class="api-try">
-          <button type="button" class="card api-row" data-endpoint="/info" aria-expanded="false"><span class="method get">GET</span><code>/info</code><span class="api-desc">App metadata, version &amp; uptime</span><span class="api-arrow">&rarr;</span></button>
-          <pre class="api-response" hidden></pre>
-        </div>
-        <div class="api-try">
-          <button type="button" class="card api-row" data-endpoint="/api/status" aria-expanded="false"><span class="method get">GET</span><code>/api/status</code><span class="api-desc">Lightweight status payload</span><span class="api-arrow">&rarr;</span></button>
-          <pre class="api-response" hidden></pre>
-        </div>
-        <div class="api-try">
-          <button type="button" class="card api-row" data-endpoint="/metrics" aria-expanded="false"><span class="method get">GET</span><code>/metrics</code><span class="api-desc">Prometheus metrics</span><span class="api-arrow">&rarr;</span></button>
-          <pre class="api-response" hidden></pre>
-        </div>
-      </div>
-    </section>
-
-    <!-- Stack -->
-    <section class="container section">
-      <div class="section-head">
-        <h2>Under the hood</h2>
-      </div>
-      <div class="stack-badges">
+    <h2>Technology stack</h2><div class="stack-badges">
         <span class="badge">Flask</span>
         <span class="badge">Docker</span>
         <span class="badge">Kubernetes</span>
@@ -176,16 +76,4 @@
         <span class="badge">Grafana</span>
         <span class="badge">Python 3.11</span>
       </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container footer-inner">
-      <p>{{ app_name }} v{{ version }} &middot; built by <a href="https://github.com/Faizan00parvez" target="_blank" rel="noopener">Faizan Parvez</a></p>
-      <p class="footer-sub">Zero-touch deployments. Full observability.</p>
-    </div>
-  </footer>
-
-  <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-</body>
-</html>
+    </section></div></main><script src="{{ url_for('static',filename='js/dashboard.js') }}"></script></body></html>

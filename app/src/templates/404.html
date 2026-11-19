@@ -8,11 +8,11 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 </head>
 <body>
-  <div class="bg-glow" aria-hidden="true"></div>
+  <header class="nav"><div class="container nav-inner"><a class="brand" href="/">{{ app_name }}</a></div></header>
   <main class="container not-found">
-    <p class="eyebrow">{{ app_name }}</p>
-    <h1>404</h1>
-    <p class="lede">This route never made it through the pipeline.</p>
+    <p class="eyebrow"><span class="signal"></span> HTTP 404</p>
+    <h1>Route not found</h1>
+    <p class="lede">Check the URL or return to the dashboard to explore available endpoints.</p>
     <a class="btn btn-primary" href="/">Back to dashboard</a>
   </main>
 </body>
