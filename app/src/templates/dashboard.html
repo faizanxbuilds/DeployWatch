@@ -29,7 +29,7 @@
 <div class="heading sub"><div><h2>Probe activity</h2><p>Recent status checks from this tab.</p></div><span class="cadence">Every 5s</span></div>
 <div class="table-wrap"><table><thead><tr><th>Time</th><th>Endpoint</th><th>Result</th><th>Duration</th></tr></thead><tbody id="activity"></tbody></table></div></section>
 <section id="api" hidden><p class="label">Diagnostics</p><h1>Endpoint inspector</h1><p class="intro">Send a request to the running service and inspect the full response.</p>
-<div class="inspector"><form id="request"><label for="endpoint">Request endpoint</label><div class="request-line"><code>GET</code><select id="endpoint">{% for path in ['/health','/info','/api/status','/metrics','/'] %}<option>{{ path }}</option>{% endfor %}</select><button>Send request &rarr;</button></div></form><div class="response-head"><h2>Response</h2><output id="http"></output></div><pre id="body">Select an endpoint and send a request.</pre></div></section>
+<div class="inspector"><form id="request"><label for="endpoint">Request endpoint</label><div class="request-line"><code>GET</code><select id="endpoint">{% for path in ['/health','/info','/api/status','/api/release','/metrics','/'] %}<option>{{ path }}</option>{% endfor %}</select><button>Send request &rarr;</button></div></form><div class="response-head"><h2>Response</h2><output id="http"></output></div><pre id="body">Select an endpoint and send a request.</pre></div></section>
 <section id="pipeline" hidden><p class="label">Architecture</p><h1>Delivery pipeline</h1><p class="intro">Follow a change from source control to a monitored Kubernetes rollout.</p><div class="pipeline">
         <div class="stage card">
           <div class="stage-icon">

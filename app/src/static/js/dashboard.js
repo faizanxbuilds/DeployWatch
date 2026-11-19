@@ -96,7 +96,7 @@ byId('request').addEventListener('submit', async event => {
   }
 });
 const repository = 'https://github.com/faizanxbuilds/DeployWatch';
-const feed = 'https://raw.githubusercontent.com/faizanxbuilds/DeployWatch/release-feed/latest.json';
+const feed = apiBase + '/api/release';
 
 function evidence(id, path, label) {
   const link = byId(id);

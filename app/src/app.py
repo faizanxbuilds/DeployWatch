@@ -13,6 +13,11 @@ from flask import Flask, jsonify, render_template
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
+if __package__:
+    from .release_feed import latest_release
+else:
+    from release_feed import latest_release
+
 APP_NAME = "DeployWatch"
 APP_VERSION = "4.0.0"
 APP_DESCRIPTION = "Zero-touch GitOps deployment pipeline with live observability"
@@ -82,6 +87,14 @@ def api_status():
             "uptime_seconds": _uptime_seconds(),
         }
     )
+
+
+@app.route("/api/release")
+def release():
+    try:
+        return jsonify(latest_release()), 200, {"Cache-Control": "no-store"}
+    except (OSError, ValueError):
+        return jsonify({"error": "Release feed temporarily unavailable"}), 503
 
 
 @app.errorhandler(404)
