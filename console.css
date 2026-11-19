@@ -1,0 +1,105 @@
+﻿:root {
+  --ink: #242231;
+  --muted: #686675;
+  --rule: #e2dfe7;
+  --accent: #61409a;
+  --mono: Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #faf9fb; color: var(--ink); font: 15px/1.5 "Segoe UI", Arial, sans-serif; }
+p, h1, h2, h3 { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button, select { font: inherit; }
+button, .btn { background: #312344; color: white; border: 0; padding: 10px 17px; border-radius: 5px; font-weight: 600; cursor: pointer; }
+button:hover, .btn:hover { background: var(--accent); }
+button:disabled { opacity: .65; cursor: wait; }
+:focus-visible { outline: 3px solid #9d74de; outline-offset: 3px; }
+aside { width: 218px; position: fixed; inset: 0 auto 0 0; display: flex; flex-direction: column; padding: 25px 15px; background: #f1eff4; border-right: 1px solid var(--rule); }
+.brand { display: flex; align-items: center; gap: 9px; font-size: 22px; font-weight: 700; letter-spacing: -.06em; }
+aside .brand { padding-left: 9px; }
+.logo { width: 31px; height: 31px; display: grid; place-items: center; background: #332447; color: #dcbaff; border-radius: 7px; line-height: 1; font-size: 31px; }
+.label, .stage-step, th { text-transform: uppercase; font: 11px/1.4 var(--mono); letter-spacing: .09em; color: var(--muted); }
+.nav-label { margin: 54px 13px 12px; }
+nav a { display: flex; align-items: center; gap: 11px; padding: 11px 13px; margin-bottom: 4px; border-radius: 5px; color: #524d5d; font-weight: 550; }
+nav svg, .stage-icon svg { width: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+nav a:hover { background: #e8e4ed; }
+nav [aria-current] { background: #e3daef; color: #51327e; }
+.side-foot { margin: auto 9px 0; padding-top: 17px; border-top: 1px solid #d7d1de; }
+small { display: block; color: var(--muted); }
+.side-foot small { margin-top: 5px; }
+.side-foot a:hover { text-decoration: underline; }
+main { margin-left: 218px; }
+header { display: flex; align-items: center; justify-content: space-between; height: 62px; padding-inline: 4%; border-bottom: 1px solid var(--rule); color: var(--muted); font-size: 13px; }
+header i { margin: 0 10px; color: #aaa4b1; }
+header strong { color: var(--ink); font-weight: 550; }
+code, pre, td { font-family: var(--mono); }
+.workspace { max-width: 1340px; margin: auto; padding: 35px 4% 60px; }
+.heading, .response-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+h1 { font-size: clamp(36px,4vw,58px); letter-spacing: -.065em; line-height: 1.15; font-weight: 600; }
+h2 { font-size: 24px; font-weight: 600; letter-spacing: -.045em; }
+.signal-panel { position: relative; isolation: isolate; overflow: hidden; margin-top: 24px; min-height: 195px; background: #30213e; border-radius: 7px 7px 0 0; color: #fbf4ff; padding: 30px; display: flex; align-items: center; }
+.signal-panel .label { color: #d1bddd; }
+.signal-panel h2 { font-size: clamp(40px,4.5vw,68px); line-height: 1.2; margin-block: 5px; letter-spacing: -.06em; }
+.signal-panel p:last-child { color: #dfd5e6; font-size: 13px; }
+.scope { position: absolute; right: 0; height: 100%; width: 43%; z-index: -1; }
+.pulse { stroke: #cebacf; }
+[data-health=ok] .pulse { stroke: #d7ff91; }
+[data-health=down] .pulse { stroke: #ffaaa1; }
+.metrics { display: grid; grid-template-columns: repeat(3,1fr); border: 1px solid var(--rule); background: white; border-radius: 0 0 7px 7px; }
+.metrics > div { padding: 19px 25px; }
+.metrics > div + div { border-left: 1px solid var(--rule); }
+.metrics strong { display: block; margin: 3px 0; font-size: clamp(23px,2.6vw,37px); font-weight: 550; letter-spacing: -.055em; font-variant-numeric: tabular-nums; }
+.sub { margin: 32px 0 16px; }
+.sub p, .intro, .stage p { color: var(--muted); }
+.cadence, output { font: 12px var(--mono); color: var(--accent); }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 11px 14px; border-bottom: 1px solid var(--rule); text-align: left; }
+th { background: #efedf2; }
+td { font-size: 13px; }
+td:last-child, th:last-child { text-align: right; }
+tr.ok td:nth-child(3) { color: #216840; }
+tr.down td:nth-child(3) { color: #a13331; }
+td:nth-child(3)::before { content: "●"; margin-right: 6px; font-size: 9px; }
+.intro { margin: 10px 0 30px; }
+.inspector { border: 1px solid var(--rule); background: white; border-radius: 6px; overflow: hidden; }
+form, .response-head { padding: 20px; }
+form label { display: block; margin-bottom: 10px; font-weight: 600; }
+.request-line { display: flex; gap: 12px; align-items: center; }
+.request-line code { color: var(--accent); }
+select { min-width: 0; flex: 1; background: #faf9fb; border: 1px solid #cfc9d5; border-radius: 4px; padding: 9px; }
+.response-head { border-top: 1px solid var(--rule); }
+pre { padding: 24px; margin: 0; min-height: 190px; max-height: 55vh; overflow: auto; background: #282131; color: #eadff3; font-size: 13px; }
+.pipeline { margin-bottom: 28px; border-top: 1px solid var(--rule); }
+.stage { display: grid; grid-template-columns: 28px 35px minmax(100px,1fr) 3fr; align-items: center; gap: 12px; padding: 18px 10px; border-bottom: 1px solid var(--rule); }
+.stage-step { grid-column: 1; grid-row: 1; }
+.stage-icon { color: var(--accent); display: flex; }
+.stack-badges { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font: 14px var(--mono); }
+.not-found { margin: 10vh auto; width: 85%; }
+.not-found .btn { display: inline-block; margin-top: 18px; }
+@media(max-width: 800px) {
+  aside { position: static; width: auto; padding: 13px 4% 0; border: 0; }
+  aside .brand { padding: 0; }
+  .nav-label { display: none; }
+  nav { display: flex; gap: 4px; margin-top: 12px; }
+  nav a { margin: 0; font-size: 13px; }
+  .side-foot { position: absolute; right: 4%; top: 17px; border: 0; margin: 0; padding: 0; font-size: 13px; }
+  .side-foot small { display: none; }
+  main { margin: 0; }
+  header { height: 42px; }
+}
+@media(max-width: 520px) {
+  nav a { padding: 9px 7px; gap: 4px; font-size: 12px; }
+  nav svg { width: 14px; }
+  .workspace { padding-top: 22px; }
+  .heading button { padding: 9px; font-size: 13px; }
+  .signal-panel { min-height: 158px; padding: 16px; }
+  .scope { width: 36%; }
+  .metrics > div { padding: 13px 9px; }
+  .metrics small { font-size: 11px; }
+  .label, th { font-size: 10px; }
+  th,td { padding: 10px 4px; }
+  td { font-size: 11px; }
+  .request-line { flex-wrap: wrap; }
+  .stage { grid-template-columns: 20px 22px 1fr; gap: 6px; }
+  .stage > p:last-child { grid-column: 3; }
+}
