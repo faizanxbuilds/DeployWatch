@@ -1,1 +1,1 @@
-Live release tracking is ready.
+Hello from the live DeployWatch demo!
