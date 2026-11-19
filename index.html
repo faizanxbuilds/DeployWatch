@@ -1,4 +1,4 @@
-
+﻿
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeployWatch | Service console</title><link rel="stylesheet" href="./console.css?v=release1"></head>
 <body data-api-base="https://deploywatch-demo.onrender.com"><aside><a class="brand" href="#release"><b class="logo" aria-hidden="true">&#8767;</b>DeployWatch</a>
@@ -37,7 +37,7 @@
 <div class="heading sub"><div><h2>Probe activity</h2><p>Recent status checks from this tab.</p></div><span class="cadence">Every 5s</span></div>
 <div class="table-wrap"><table><thead><tr><th>Time</th><th>Endpoint</th><th>Result</th><th>Duration</th></tr></thead><tbody id="activity"></tbody></table></div></section>
 <section id="api" hidden><p class="label">Diagnostics</p><h1>Endpoint inspector</h1><p class="intro">Send a request to the running service and inspect the full response.</p>
-<div class="inspector"><form id="request"><label for="endpoint">Request endpoint</label><div class="request-line"><code>GET</code><select id="endpoint"><option>/health</option><option>/info</option><option>/api/status</option><option>/metrics</option><option>/</option></select><button>Send request &rarr;</button></div></form><div class="response-head"><h2>Response</h2><output id="http"></output></div><pre id="body">Select an endpoint and send a request.</pre></div></section>
+<div class="inspector"><form id="request"><label for="endpoint">Request endpoint</label><div class="request-line"><code>GET</code><select id="endpoint"><option>/health</option><option>/info</option><option>/api/status</option><option>/api/release</option><option>/metrics</option><option>/</option></select><button>Send request &rarr;</button></div></form><div class="response-head"><h2>Response</h2><output id="http"></output></div><pre id="body">Select an endpoint and send a request.</pre></div></section>
 <section id="pipeline" hidden><p class="label">Architecture</p><h1>Delivery pipeline</h1><p class="intro">Follow a change from source control to a monitored Kubernetes rollout.</p><div class="pipeline">
         <div class="stage card">
           <div class="stage-icon">
@@ -99,4 +99,4 @@
         <span class="badge">Grafana</span>
         <span class="badge">Python 3.11</span>
       </div>
-    </section></div></main><script src="./console.js?v=release1"></script></body></html>
+    </section></div></main><script src="./console.js?v=release2"></script></body></html>
